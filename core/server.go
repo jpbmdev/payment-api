@@ -22,5 +22,7 @@ func NewServerInstance() ServerInstance {
 
 func (s *serverInstace) InitServer() {
 
+	InitializeSwagger(s.gin)
+
 	s.gin.Run(os.Getenv("PORT"))
 }
