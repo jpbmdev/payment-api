@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"github.com/joho/godotenv"
+	"github.com/jpbmdev/payment-api/core"
+)
 
 func main() {
-	fmt.Print("Hello World")
+	godotenv.Load(".env")
+
+	serverInstace := core.NewServerInstance()
+
+	serverInstace.InitServer()
 }
