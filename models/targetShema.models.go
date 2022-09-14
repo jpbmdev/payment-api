@@ -10,6 +10,7 @@ import (
 // -----------------------------------------------
 
 type TargetParams struct {
+	Name string  `json:"name"`
 	Rate float64 `json:"rate"`
 	Max  int     `json:"max"`
 }
@@ -17,9 +18,7 @@ type TargetParams struct {
 type TargetSchema struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	Version      string             `json:"version"`
-	New          TargetParams       `json:"new"`
-	Frequent     TargetParams       `json:"frequent"`
-	Premium      TargetParams       `json:"premium"`
+	Targets      []TargetParams     `json:"targets"`
 	DesicionTree []dtree.Tree       `json:"desicionTree"`
 }
 
@@ -29,8 +28,6 @@ type TargetSchemas []TargetSchema
 type TargetSchemaSwagger struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	Version      string             `json:"version"`
-	New          TargetParams       `json:"new"`
-	Frequent     TargetParams       `json:"frequent"`
-	Premium      TargetParams       `json:"premium"`
+	Targets      []TargetParams     `json:"targets"`
 	DesicionTree []Tree             `json:"desicionTree"`
 }

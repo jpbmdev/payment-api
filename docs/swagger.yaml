@@ -30,6 +30,8 @@ definitions:
     properties:
       max:
         type: integer
+      name:
+        type: string
       rate:
         type: number
     type: object
@@ -39,14 +41,12 @@ definitions:
         items:
           $ref: '#/definitions/models.Tree'
         type: array
-      frequent:
-        $ref: '#/definitions/models.TargetParams'
       id:
         type: string
-      new:
-        $ref: '#/definitions/models.TargetParams'
-      premium:
-        $ref: '#/definitions/models.TargetParams'
+      targets:
+        items:
+          $ref: '#/definitions/models.TargetParams'
+        type: array
       version:
         type: string
     type: object
@@ -121,7 +121,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.SucessfullOperation'
+            $ref: '#/definitions/models.TargetParams'
         "400":
           description: Bad Request
           schema:
