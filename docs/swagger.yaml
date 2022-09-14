@@ -7,6 +7,13 @@ definitions:
     required:
     - name
     type: object
+  models.DecisionTreeInputs:
+    properties:
+      amountTotal:
+        type: number
+      cant:
+        type: number
+    type: object
   models.FailedOperation:
     properties:
       internalCode:
@@ -18,6 +25,50 @@ definitions:
     properties:
       message:
         type: string
+    type: object
+  models.TargetParams:
+    properties:
+      max:
+        type: integer
+      rate:
+        type: number
+    type: object
+  models.TargetSchemaSwagger:
+    properties:
+      desicionTree:
+        items:
+          $ref: '#/definitions/models.Tree'
+        type: array
+      frequent:
+        $ref: '#/definitions/models.TargetParams'
+      id:
+        type: string
+      new:
+        $ref: '#/definitions/models.TargetParams'
+      premium:
+        $ref: '#/definitions/models.TargetParams'
+      version:
+        type: string
+    type: object
+  models.Tree:
+    properties:
+      content: {}
+      headers:
+        additionalProperties: true
+        type: object
+      id:
+        type: integer
+      key:
+        type: string
+      name:
+        type: string
+      operator:
+        type: string
+      order:
+        type: integer
+      parentId:
+        type: integer
+      value: {}
     type: object
   models.User:
     properties:
@@ -33,6 +84,55 @@ info:
   title: Payment Simple API
   version: "1.0"
 paths:
+  /target-schema:
+    get:
+      description: Get lists of Target Schemas
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.TargetSchemaSwagger'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Get Target Schemas
+      tags:
+      - target-schema
+  /target-schema/test-tree:
+    post:
+      consumes:
+      - application/json
+      description: Test Target Schema Decision Tree output with Cant and AmountTotal
+      parameters:
+      - description: payload
+        in: body
+        name: DecisionTreeInputs
+        required: true
+        schema:
+          $ref: '#/definitions/models.DecisionTreeInputs'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SucessfullOperation'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Test Target Schema Decision Tree
+      tags:
+      - target-schema
   /user:
     get:
       description: Get lists of users
