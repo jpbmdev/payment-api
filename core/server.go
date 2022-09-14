@@ -1,28 +1,38 @@
 package core
 
 import (
-	"os"
-
 	"github.com/gin-gonic/gin"
+	"github.com/jpbmdev/payment-api/config"
+	"github.com/jpbmdev/payment-api/routes"
 )
 
+// -----------------------------------------------
+// -- Struct to create and configure the server
+// -----------------------------------------------
 type ServerInstance interface {
 	InitServer()
 }
 
 type serverInstace struct {
-	gin *gin.Engine
+	gin        *gin.Engine
+	userRoutes routes.UserRoutes
 }
 
+//Function to crete new server instance
 func NewServerInstance() ServerInstance {
 	return &serverInstace{
-		gin: gin.Default(),
+		gin:        gin.Default(),
+		userRoutes: routes.NewUserRoutes(),
 	}
 }
 
 func (s *serverInstace) InitServer() {
-
+	//Load Swagger documentation page
 	InitializeSwagger(s.gin)
 
-	s.gin.Run(os.Getenv("PORT"))
+	//Initialize user routes
+	s.userRoutes.InitializeRoutes(s.gin)
+
+	//Initialize server
+	s.gin.Run(config.ConfigSchema.Port)
 }
