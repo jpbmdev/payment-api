@@ -73,7 +73,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SucessfullOperation"
+                            "$ref": "#/definitions/models.TargetParams"
                         }
                     },
                     "400": {
@@ -213,6 +213,9 @@ const docTemplate = `{
                 "max": {
                     "type": "integer"
                 },
+                "name": {
+                    "type": "string"
+                },
                 "rate": {
                     "type": "number"
                 }
@@ -227,17 +230,14 @@ const docTemplate = `{
                         "$ref": "#/definitions/models.Tree"
                     }
                 },
-                "frequent": {
-                    "$ref": "#/definitions/models.TargetParams"
-                },
                 "id": {
                     "type": "string"
                 },
-                "new": {
-                    "$ref": "#/definitions/models.TargetParams"
-                },
-                "premium": {
-                    "$ref": "#/definitions/models.TargetParams"
+                "targets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.TargetParams"
+                    }
                 },
                 "version": {
                     "type": "string"

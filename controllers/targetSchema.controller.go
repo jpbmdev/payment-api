@@ -63,7 +63,7 @@ func (c *targetSchemaController) GetTargetSchemas(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param DecisionTreeInputs body models.DecisionTreeInputs true "payload"
-// @Success 200 {object}  models.SucessfullOperation
+// @Success 200 {object}  models.TargetParams
 // @Failure 400 {object}  models.FailedOperation
 // @Failure 500 {object}  models.FailedOperation
 // @Router /target-schema/test-tree [post]
@@ -109,8 +109,13 @@ func (c *targetSchemaController) TestTargetSchemaDecisionTree(ctx *gin.Context) 
 		return
 	}
 
+	var targetParam models.TargetParams
+	for i := range targetSchema.Targets {
+		if targetSchema.Targets[i].Name == target {
+			targetParam = targetSchema.Targets[i]
+		}
+	}
+
 	//Return the target returned by the decision tree
-	ctx.JSON(http.StatusOK, models.SucessfullOperation{
-		Message: target,
-	})
+	ctx.JSON(http.StatusOK, targetParam)
 }
