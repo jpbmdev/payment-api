@@ -4,6 +4,7 @@ import (
 	"github.com/jpbmdev/payment-api/models"
 	"github.com/jpbmdev/payment-api/repositories"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // -----------------------------------------------
@@ -12,6 +13,7 @@ import (
 type UserService interface {
 	CreateUser(user models.User) error
 	GetUsers() (models.Users, error)
+	FindUserById(id primitive.ObjectID, user *models.User) error
 }
 
 type userService struct {
@@ -46,4 +48,17 @@ func (s *userService) GetUsers() (models.Users, error) {
 		return nil, err
 	}
 	return users, nil
+}
+
+func (s *userService) FindUserById(id primitive.ObjectID, user *models.User) error {
+	//Create Sort query
+	sortFilter := bson.M{"_id": id}
+
+	err := s.respository.FindOne(sortFilter, user)
+
+	//Handle Errors
+	if err != nil {
+		return err
+	}
+	return nil
 }
