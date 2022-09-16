@@ -121,6 +121,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/loan/{id}": {
+            "get": {
+                "description": "Get loan by Id",
+                "tags": [
+                    "loan"
+                ],
+                "summary": "Get Loan by Id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Loan"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.FailedOperation"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.FailedOperation"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.FailedOperation"
+                        }
+                    }
+                }
+            }
+        },
         "/loan/{id}/payment": {
             "put": {
                 "description": "Add Payment To Loan",
@@ -157,6 +201,18 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Payment"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.FailedOperation"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.FailedOperation"
                         }
                     },
                     "500": {
@@ -336,18 +392,18 @@ const docTemplate = `{
         "models.CreateLoanDto": {
             "type": "object",
             "required": [
-                "StartDate",
                 "amount",
+                "startDate",
                 "term",
                 "userId"
             ],
             "properties": {
-                "StartDate": {
-                    "type": "string"
-                },
                 "amount": {
                     "type": "number",
                     "minimum": 1
+                },
+                "startDate": {
+                    "type": "string"
                 },
                 "term": {
                     "type": "integer",
@@ -394,9 +450,6 @@ const docTemplate = `{
         "models.Loan": {
             "type": "object",
             "properties": {
-                "StartDate": {
-                    "type": "string"
-                },
                 "amount": {
                     "type": "number"
                 },
@@ -420,6 +473,9 @@ const docTemplate = `{
                 },
                 "rate": {
                     "type": "number"
+                },
+                "startDate": {
+                    "type": "string"
                 },
                 "targetName": {
                     "type": "string"

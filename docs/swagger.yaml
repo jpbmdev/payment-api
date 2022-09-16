@@ -12,19 +12,19 @@ definitions:
     type: object
   models.CreateLoanDto:
     properties:
-      StartDate:
-        type: string
       amount:
         minimum: 1
         type: number
+      startDate:
+        type: string
       term:
         minimum: 1
         type: integer
       userId:
         type: string
     required:
-    - StartDate
     - amount
+    - startDate
     - term
     - userId
     type: object
@@ -51,8 +51,6 @@ definitions:
     type: object
   models.Loan:
     properties:
-      StartDate:
-        type: string
       amount:
         type: number
       debt:
@@ -69,6 +67,8 @@ definitions:
         type: number
       rate:
         type: number
+      startDate:
+        type: string
       targetName:
         type: string
       targetSchemaId:
@@ -237,6 +237,35 @@ paths:
       summary: Create Loan
       tags:
       - loan
+  /loan/{id}:
+    get:
+      description: Get loan by Id
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Loan'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Get Loan by Id
+      tags:
+      - loan
   /loan/{id}/payment:
     put:
       consumes:
@@ -261,6 +290,14 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Payment'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
         "500":
           description: Internal Server Error
           schema:

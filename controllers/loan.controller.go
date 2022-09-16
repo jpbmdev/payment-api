@@ -20,6 +20,7 @@ import (
 type LoanController interface {
 	CreateLoan(ctx *gin.Context)
 	GetLoans(ctx *gin.Context)
+	GetLoanById(ctx *gin.Context)
 	AddPaymentToLoan(ctx *gin.Context)
 }
 
@@ -215,6 +216,38 @@ func (c *loanController) GetLoans(ctx *gin.Context) {
 
 	//Create Success Response
 	ctx.JSON(http.StatusOK, loans)
+}
+
+// GetLoanById godoc
+// @Summary Get Loan by Id
+// @Schemes
+// @Description Get loan by Id
+// @Tags loan
+// @Param id  path string true "ID"
+// @Success 200 {object}  models.Loan
+// @Failure 400 {object}  models.FailedOperation
+// @Failure 404 {object}  models.FailedOperation
+// @Failure 500 {object}  models.FailedOperation
+// @Router /loan/{id} [get]
+func (c *loanController) GetLoanById(ctx *gin.Context) {
+	//Check if the id passed is a mongoID
+	loanId, err := primitive.ObjectIDFromHex(ctx.Param("id"))
+	if err != nil {
+		errorsResponse.Error400(ctx, "Invalid Loan ID")
+		return
+	}
+
+	//Find the loan
+	var loan models.Loan
+	err = c.service.FindLoanById(loanId, &loan)
+	//Handle errors
+	if err != nil {
+		errorsResponse.Error404(ctx, "Loan does not exists")
+		return
+	}
+
+	//Create Success Response
+	ctx.JSON(http.StatusOK, loan)
 }
 
 // CreateLoan godoc

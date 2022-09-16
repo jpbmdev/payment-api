@@ -19,7 +19,7 @@ type CreateLoanDto struct {
 	Amount    float64            `json:"amount" binding:"required,gte=1"`
 	Term      int                `json:"term" binding:"required,gte=1"`
 	UserId    primitive.ObjectID `json:"userId" binding:"required"`
-	StartDate string             `json:"StartDate" binding:"required"`
+	StartDate string             `json:"startDate" binding:"required"`
 }
 
 type LoanHistory struct {
@@ -38,7 +38,7 @@ type Loan struct {
 	UserId         primitive.ObjectID `json:"userId" bson:"userId"`
 	TargetSchemaId primitive.ObjectID `json:"targetSchemaId" bson:"targetSchemaId"`
 	TargetName     string             `json:"targetName" bson:"targetName"`
-	StartDate      time.Time          `json:"StartDate" bson:"startDate"`
+	StartDate      time.Time          `json:"startDate" bson:"startDate"`
 	EndDate        time.Time          `json:"endDate" bson:"endDate"`
 	Quota          float64            `json:"quota"`
 	Debt           float64            `json:"debt"`
