@@ -158,6 +158,56 @@
                 }
             }
         },
+        "/loan/{id}/debt": {
+            "get": {
+                "description": "Get Debt of a single Loan, you can pass a date to check the debt on that specific time, if no date is passed this endpoint will return the entire debt",
+                "tags": [
+                    "loan"
+                ],
+                "summary": "Get Debt of a single Loan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "string valid",
+                        "name": "date",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.LoanDebt"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.FailedOperation"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.FailedOperation"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.FailedOperation"
+                        }
+                    }
+                }
+            }
+        },
         "/loan/{id}/payment": {
             "get": {
                 "description": "Get Payments by loan Id",
@@ -520,6 +570,14 @@
                 },
                 "userId": {
                     "type": "string"
+                }
+            }
+        },
+        "models.LoanDebt": {
+            "type": "object",
+            "properties": {
+                "debt": {
+                    "type": "number"
                 }
             }
         },

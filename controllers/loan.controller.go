@@ -23,6 +23,7 @@ type LoanController interface {
 	GetLoanById(ctx *gin.Context)
 	GetPaymentsByLoanId(ctx *gin.Context)
 	AddPaymentToLoan(ctx *gin.Context)
+	GetLoanDebt(ctx *gin.Context)
 }
 
 type loanController struct {
@@ -249,6 +250,80 @@ func (c *loanController) GetLoanById(ctx *gin.Context) {
 
 	//Create Success Response
 	ctx.JSON(http.StatusOK, loan)
+}
+
+// GetLoanDebt godoc
+// @Summary Get Debt of a single Loan
+// @Schemes
+// @Description Get Debt of a single Loan, you can pass a date to check the debt on that specific time, if no date is passed this endpoint will return the entire debt
+// @Tags loan
+// @Param id  path string true "ID"
+// @Param   date      query     string     false  "string valid"
+// @Success 200 {object}  models.LoanDebt
+// @Failure 400 {object}  models.FailedOperation
+// @Failure 404 {object}  models.FailedOperation
+// @Failure 500 {object}  models.FailedOperation
+// @Router /loan/{id}/debt [get]
+func (c *loanController) GetLoanDebt(ctx *gin.Context) {
+	//Check if the id passed is a mongoID
+	loanId, err := primitive.ObjectIDFromHex(ctx.Param("id"))
+	if err != nil {
+		errorsResponse.Error400(ctx, "Invalid Loan ID")
+		return
+	}
+
+	var date time.Time
+	//If date is passed transform it to a date
+	if ctx.Query("date") != "" {
+		var err error
+		date, err = time.Parse("2006-01-02", ctx.Query("date"))
+		if err != nil {
+			errorsResponse.Error400(ctx, err.Error())
+			return
+		}
+	}
+
+	//Find the loan
+	var loan models.Loan
+	err = c.service.FindLoanById(loanId, &loan)
+	//Handle errors
+	if err != nil {
+		errorsResponse.Error404(ctx, "Loan does not exists")
+		return
+	}
+
+	//If no date is passed we return the total debt OR
+	//If the date passed is after the endDate of the loan
+	//We return the entire detb of the loan
+	if date.IsZero() || date.After(loan.EndDate) {
+		ctx.JSON(http.StatusOK, models.LoanDebt{
+			Debt: loan.Debt,
+		})
+		return
+	}
+
+	if !date.After(loan.StartDate.AddDate(0, 0, -1)) {
+		errorsResponse.Error400(ctx, "The date is before the loan startDate")
+		return
+	}
+
+	//Find the index of the month of the payment in the loan history
+	index := -1
+	for i := range loan.LoanHistory {
+		if date.After(loan.LoanHistory[i].MonthStart.AddDate(0, 0, -1)) && date.Before(loan.LoanHistory[i].MonthEnd.AddDate(0, 0, 1)) {
+			index = i
+			break
+		}
+	}
+
+	//Calculate the debt in the specific month
+	debt := loan.LoanHistory[index].MonthDebt - loan.LoanHistory[index].Accumulated
+	debt = math.Round((debt)*100) / 100
+
+	//Create Success Response
+	ctx.JSON(http.StatusOK, models.LoanDebt{
+		Debt: debt,
+	})
 }
 
 // GetPaymentsByLoanId godoc

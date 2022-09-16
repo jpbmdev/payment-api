@@ -45,4 +45,8 @@ type Loan struct {
 	LoanHistory    []LoanHistory      `json:"loanHistory" bson:"loanHistory"`
 }
 
+type LoanDebt struct {
+	Debt float64 `json:"debt"`
+}
+
 type Loans []Loan

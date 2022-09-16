@@ -78,6 +78,11 @@ definitions:
       userId:
         type: string
     type: object
+  models.LoanDebt:
+    properties:
+      debt:
+        type: number
+    type: object
   models.LoanHistory:
     properties:
       accumulated:
@@ -264,6 +269,41 @@ paths:
           schema:
             $ref: '#/definitions/models.FailedOperation'
       summary: Get Loan by Id
+      tags:
+      - loan
+  /loan/{id}/debt:
+    get:
+      description: Get Debt of a single Loan, you can pass a date to check the debt
+        on that specific time, if no date is passed this endpoint will return the
+        entire debt
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: string valid
+        in: query
+        name: date
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.LoanDebt'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Get Debt of a single Loan
       tags:
       - loan
   /loan/{id}/payment:
