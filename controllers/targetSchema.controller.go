@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jpbmdev/payment-api/errorsResponse"
 	"github.com/jpbmdev/payment-api/models"
 	"github.com/jpbmdev/payment-api/services"
 )
@@ -44,10 +45,7 @@ func (c *targetSchemaController) GetTargetSchemas(ctx *gin.Context) {
 
 	//Handle errors
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.FailedOperation{
-			InternalCode: "InternalServerError",
-			Message:      err.Error(),
-		})
+		errorsResponse.Error500(ctx, err.Error())
 		return
 	}
 
@@ -74,10 +72,7 @@ func (c *targetSchemaController) TestTargetSchemaDecisionTree(ctx *gin.Context) 
 	err := ctx.ShouldBindJSON(&decisionTreeInputs)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.FailedOperation{
-			InternalCode: "BadRequest",
-			Message:      err.Error(),
-		})
+		errorsResponse.Error400(ctx, err.Error())
 		return
 	}
 
@@ -87,10 +82,7 @@ func (c *targetSchemaController) TestTargetSchemaDecisionTree(ctx *gin.Context) 
 	err = c.service.FindLatestTargetSchema(&targetSchema)
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.FailedOperation{
-			InternalCode: "InternalServerError",
-			Message:      err.Error(),
-		})
+		errorsResponse.Error500(ctx, err.Error())
 		return
 	}
 
@@ -102,10 +94,7 @@ func (c *targetSchemaController) TestTargetSchemaDecisionTree(ctx *gin.Context) 
 	)
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.FailedOperation{
-			InternalCode: "InternalServerError",
-			Message:      err.Error(),
-		})
+		errorsResponse.Error500(ctx, err.Error())
 		return
 	}
 

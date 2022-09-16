@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jpbmdev/payment-api/errorsResponse"
 	"github.com/jpbmdev/payment-api/models"
 	"github.com/jpbmdev/payment-api/services"
 )
@@ -46,10 +47,7 @@ func (c *userController) CreateUser(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&createUserDto)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.FailedOperation{
-			InternalCode: "BadRequest",
-			Message:      err.Error(),
-		})
+		errorsResponse.Error400(ctx, err.Error())
 		return
 	}
 
@@ -60,10 +58,7 @@ func (c *userController) CreateUser(ctx *gin.Context) {
 	err = c.service.CreateUser(user)
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.FailedOperation{
-			InternalCode: "InternalServerError",
-			Message:      err.Error(),
-		})
+		errorsResponse.Error500(ctx, err.Error())
 		return
 	}
 
@@ -86,10 +81,7 @@ func (c *userController) GetUsers(ctx *gin.Context) {
 	users, err := c.service.GetUsers()
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.FailedOperation{
-			InternalCode: "InternalServerError",
-			Message:      err.Error(),
-		})
+		errorsResponse.Error500(ctx, err.Error())
 		return
 	}
 
