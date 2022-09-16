@@ -17,6 +17,7 @@ type LoanService interface {
 	CreateLoan(loan models.Loan) error
 	CalculateQuota(term float64, rate float64, amount float64) float64
 	FindLastYearLoans(userId primitive.ObjectID, loanStartDate time.Time) (models.Loans, error)
+	FindLoansByDate(fromDate time.Time, toDate time.Time, pageSize int, page int) (models.Loans, error)
 }
 
 type loanService struct {
@@ -64,6 +65,30 @@ func (s *loanService) FindLastYearLoans(userId primitive.ObjectID, loanStartDate
 		}}
 
 	loans, err := s.respository.Find(filter)
+
+	if err != nil {
+		return nil, err
+	}
+	return loans, nil
+}
+
+func (s *loanService) FindLoansByDate(fromDate time.Time, toDate time.Time, pageSize int, page int) (models.Loans, error) {
+	//Create query to find the loans started in a range
+	filter := bson.M{}
+
+	if !fromDate.IsZero() {
+		filter["startDate"] = bson.M{
+			"$gte": fromDate,
+		}
+	}
+
+	if !toDate.IsZero() {
+		filter["startDate"] = bson.M{
+			"$lte": toDate,
+		}
+	}
+
+	loans, err := s.respository.FindPaginate(filter, pageSize, page)
 
 	if err != nil {
 		return nil, err

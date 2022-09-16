@@ -19,6 +19,7 @@ import (
 // -----------------------------------------------
 type LoanController interface {
 	CreateLoan(ctx *gin.Context)
+	GetLoans(ctx *gin.Context)
 }
 
 type loanController struct {
@@ -36,6 +37,62 @@ func NewLoanController() LoanController {
 		targetSchemaService: services.NewTargetSchemaService(),
 		decisionTreeService: services.NewDecisionTreeService(),
 	}
+}
+
+// GetLoans godoc
+// @Summary Get Loans
+// @Schemes
+// @Description Get loans, you can pass a start date, and a end date and the endpoint will find all loans STARTED in that range, if no params are passed this will return all loans, this endpoint supports a very simple pagination where you can select the page and the pageSize
+// @Tags loan
+// @Produce json
+// @Param   from      query     string     false  "string valid"
+// @Param   to      query     string     false  "string valid"
+// @Param   pageSize      query     int     false  "int valid"
+// @Param   page     query     int     false  "int valid"
+// @Success 200 {object}  models.Loans
+// @Failure 400 {object}  models.FailedOperation
+// @Failure 404 {object}  models.FailedOperation
+// @Failure 500 {object}  models.FailedOperation
+// @Router /loan [get]
+func (c *loanController) GetLoans(ctx *gin.Context) {
+	var fromDate time.Time
+	var toDate time.Time
+
+	//If from is passed transform it to a date
+	if ctx.Query("from") != "" {
+		var err error
+		fromDate, err = time.Parse("2006-01-02", ctx.Query("from"))
+		if err != nil {
+			errorsResponse.Error400(ctx, err.Error())
+			return
+		}
+	}
+
+	//If to is passed transform it to a date
+	if ctx.Query("to") != "" {
+		var err error
+		toDate, err = time.Parse("2006-01-02", ctx.Query("to"))
+		if err != nil {
+			errorsResponse.Error400(ctx, err.Error())
+			return
+		}
+	}
+
+	//If from and to are passed and are valid check that from < to
+	if ctx.Query("from") != "" && ctx.Query("to") != "" && !fromDate.Before(toDate) {
+		errorsResponse.Error400(ctx, "From should be before to")
+		return
+	}
+
+	loans, err := c.service.FindLoansByDate(fromDate, toDate, ctx.Keys["pageSize"].(int), ctx.Keys["page"].(int))
+
+	if err != nil {
+		errorsResponse.Error500(ctx, err.Error())
+		return
+	}
+
+	//Create Success Response
+	ctx.JSON(http.StatusOK, loans)
 }
 
 // CreateLoan godoc

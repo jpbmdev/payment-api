@@ -145,10 +145,56 @@ info:
   version: "1.0"
 paths:
   /loan:
+    get:
+      description: Get loans, you can pass a start date, and a end date and the endpoint
+        will find all loans STARTED in that range, if no params are passed this will
+        return all loans, this endpoint supports a very simple pagination where you
+        can select the page and the pageSize
+      parameters:
+      - description: string valid
+        in: query
+        name: from
+        type: string
+      - description: string valid
+        in: query
+        name: to
+        type: string
+      - description: int valid
+        in: query
+        name: pageSize
+        type: integer
+      - description: int valid
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Loan'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Get Loans
+      tags:
+      - loan
     post:
       consumes:
       - application/json
-      description: Create loan
+      description: Create loan, Full detail on the readme
       parameters:
       - description: payload
         in: body

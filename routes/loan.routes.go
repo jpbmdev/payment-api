@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jpbmdev/payment-api/controllers"
+	"github.com/jpbmdev/payment-api/middlewares"
 )
 
 // -----------------------------------------------
@@ -24,5 +25,6 @@ func NewLoanRoutes() LoanRoutes {
 }
 
 func (r *loanRoutes) InitializeRoutes(server *gin.Engine) {
+	server.GET("/loan", middlewares.PaginationMiddleware(), r.controller.GetLoans)
 	server.POST("/loan", r.controller.CreateLoan)
 }
