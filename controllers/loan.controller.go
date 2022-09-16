@@ -318,6 +318,9 @@ func (c *loanController) GetLoanDebt(ctx *gin.Context) {
 
 	//Calculate the debt in the specific month
 	debt := loan.LoanHistory[index].MonthDebt - loan.LoanHistory[index].Accumulated
+	if debt < 0 {
+		debt = 0
+	}
 	debt = math.Round((debt)*100) / 100
 
 	//Create Success Response
