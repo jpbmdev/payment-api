@@ -28,5 +28,6 @@ func (r *loanRoutes) InitializeRoutes(server *gin.Engine) {
 	server.GET("/loan", middlewares.PaginationMiddleware(), r.controller.GetLoans)
 	server.POST("/loan", r.controller.CreateLoan)
 	server.GET("/loan/:id", r.controller.GetLoanById)
+	server.GET("/loan/:id/payment", r.controller.GetPaymentsByLoanId)
 	server.PUT("/loan/:id/payment", r.controller.AddPaymentToLoan)
 }

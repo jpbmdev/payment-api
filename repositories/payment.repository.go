@@ -5,6 +5,7 @@ import (
 
 	"github.com/jpbmdev/payment-api/database"
 	"github.com/jpbmdev/payment-api/models"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -13,6 +14,7 @@ import (
 // -----------------------------------------------
 type PaymentRepository interface {
 	InsertOne(payment models.Payment) error
+	Find(filter bson.M) (models.Payments, error)
 }
 
 type paymentRepository struct {
@@ -39,4 +41,28 @@ func (r *paymentRepository) InsertOne(payment models.Payment) error {
 		return err
 	}
 	return nil
+}
+
+func (r *paymentRepository) Find(filter bson.M) (models.Payments, error) {
+	payments := []models.Payment{}
+
+	//Get cursor of database
+	cur, err := r.collection.Find(r.ctx, filter)
+
+	//Handle errors
+	if err != nil {
+		return nil, err
+	}
+
+	//Iterate over the cursor to get the loan
+	for cur.Next(r.ctx) {
+		var payment models.Payment
+		err = cur.Decode(&payment)
+		if err != nil {
+			return nil, err
+		}
+		payments = append(payments, payment)
+	}
+
+	return payments, nil
 }
