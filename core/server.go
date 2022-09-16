@@ -17,6 +17,7 @@ type serverInstace struct {
 	gin                *gin.Engine
 	userRoutes         routes.UserRoutes
 	targetSchemaRoutes routes.TargetShemaRoutes
+	loanRoutes         routes.LoanRoutes
 }
 
 //Function to crete new server instance
@@ -25,6 +26,7 @@ func NewServerInstance() ServerInstance {
 		gin:                gin.Default(),
 		userRoutes:         routes.NewUserRoutes(),
 		targetSchemaRoutes: routes.NewTargetShemaRoutes(),
+		loanRoutes:         routes.NewLoanRoutes(),
 	}
 }
 
@@ -37,6 +39,9 @@ func (s *serverInstace) InitServer() {
 
 	//Initialize targetSchema routes
 	s.targetSchemaRoutes.InitializeRoutes(s.gin)
+
+	//Initialize loan routes
+	s.loanRoutes.InitializeRoutes(s.gin)
 
 	//Initialize server
 	s.gin.Run(config.ConfigSchema.Port)

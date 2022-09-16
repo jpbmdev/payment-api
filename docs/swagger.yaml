@@ -1,5 +1,23 @@
 basePath: /
 definitions:
+  models.CreateLoanDto:
+    properties:
+      StartDate:
+        type: string
+      amount:
+        minimum: 1
+        type: number
+      term:
+        minimum: 1
+        type: integer
+      userId:
+        type: string
+    required:
+    - StartDate
+    - amount
+    - term
+    - userId
+    type: object
   models.CreateUserDto:
     properties:
       name:
@@ -19,6 +37,48 @@ definitions:
       internalCode:
         type: string
       message:
+        type: string
+    type: object
+  models.Loan:
+    properties:
+      StartDate:
+        type: string
+      amount:
+        type: number
+      debt:
+        type: number
+      endDate:
+        type: string
+      id:
+        type: string
+      loanHistory:
+        items:
+          $ref: '#/definitions/models.LoanHistory'
+        type: array
+      quota:
+        type: number
+      rate:
+        type: number
+      targetName:
+        type: string
+      targetSchemaId:
+        type: string
+      term:
+        type: integer
+      userId:
+        type: string
+    type: object
+  models.LoanHistory:
+    properties:
+      accumulated:
+        type: number
+      monthDebt:
+        type: number
+      monthEnd:
+        type: string
+      monthStart:
+        type: string
+      paymentId:
         type: string
     type: object
   models.SucessfullOperation:
@@ -84,6 +144,40 @@ info:
   title: Payment Simple API
   version: "1.0"
 paths:
+  /loan:
+    post:
+      consumes:
+      - application/json
+      description: Create loan
+      parameters:
+      - description: payload
+        in: body
+        name: CreateLoanDto
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateLoanDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Loan'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Create Loan
+      tags:
+      - loan
   /target-schema:
     get:
       description: Get lists of Target Schemas

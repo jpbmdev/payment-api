@@ -16,6 +16,58 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/loan": {
+            "post": {
+                "description": "Create loan",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "loan"
+                ],
+                "summary": "Create Loan",
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "CreateLoanDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateLoanDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Loan"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.FailedOperation"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.FailedOperation"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.FailedOperation"
+                        }
+                    }
+                }
+            }
+        },
         "/target-schema": {
             "get": {
                 "description": "Get lists of Target Schemas",
@@ -166,6 +218,31 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.CreateLoanDto": {
+            "type": "object",
+            "required": [
+                "StartDate",
+                "amount",
+                "term",
+                "userId"
+            ],
+            "properties": {
+                "StartDate": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "number",
+                    "minimum": 1
+                },
+                "term": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "userId": {
+                    "type": "string"
+                }
+            }
+        },
         "models.CreateUserDto": {
             "type": "object",
             "required": [
@@ -195,6 +272,70 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Loan": {
+            "type": "object",
+            "properties": {
+                "StartDate": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "number"
+                },
+                "debt": {
+                    "type": "number"
+                },
+                "endDate": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "loanHistory": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.LoanHistory"
+                    }
+                },
+                "quota": {
+                    "type": "number"
+                },
+                "rate": {
+                    "type": "number"
+                },
+                "targetName": {
+                    "type": "string"
+                },
+                "targetSchemaId": {
+                    "type": "string"
+                },
+                "term": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.LoanHistory": {
+            "type": "object",
+            "properties": {
+                "accumulated": {
+                    "type": "number"
+                },
+                "monthDebt": {
+                    "type": "number"
+                },
+                "monthEnd": {
+                    "type": "string"
+                },
+                "monthStart": {
+                    "type": "string"
+                },
+                "paymentId": {
                     "type": "string"
                 }
             }
