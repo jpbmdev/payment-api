@@ -51,10 +51,10 @@ func (s *userService) GetUsers() (models.Users, error) {
 }
 
 func (s *userService) FindUserById(id primitive.ObjectID, user *models.User) error {
-	//Create Sort query
-	sortFilter := bson.M{"_id": id}
+	//Create query
+	filter := bson.M{"_id": id}
 
-	err := s.respository.FindOne(sortFilter, user)
+	err := s.respository.FindOne(filter, user)
 
 	//Handle Errors
 	if err != nil {

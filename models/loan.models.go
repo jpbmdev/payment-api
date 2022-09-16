@@ -10,6 +10,11 @@ import (
 // -- Loan models & dtos
 // -----------------------------------------------
 
+type AddPaymentToLoanDto struct {
+	Date   string  `json:"date" binding:"required"`
+	Amount float64 `json:"amount" binding:"required,gt=0" `
+}
+
 type CreateLoanDto struct {
 	Amount    float64            `json:"amount" binding:"required,gte=1"`
 	Term      int                `json:"term" binding:"required,gte=1"`
@@ -22,7 +27,7 @@ type LoanHistory struct {
 	MonthEnd    time.Time          `json:"monthEnd"`
 	Accumulated float64            `json:"accumulated"`
 	MonthDebt   float64            `json:"monthDebt"`
-	PaymentId   primitive.ObjectID `json:"paymentId,omitempty" bson:"_id,omitempty"`
+	PaymentId   primitive.ObjectID `json:"paymentId,omitempty" bson:"paymentId,omitempty"`
 }
 
 type Loan struct {
@@ -35,7 +40,7 @@ type Loan struct {
 	TargetName     string             `json:"targetName" bson:"targetName"`
 	StartDate      time.Time          `json:"StartDate" bson:"startDate"`
 	EndDate        time.Time          `json:"endDate" bson:"endDate"`
-	Quota          float32            `json:"quota"`
+	Quota          float64            `json:"quota"`
 	Debt           float64            `json:"debt"`
 	LoanHistory    []LoanHistory      `json:"loanHistory" bson:"loanHistory"`
 }

@@ -1,5 +1,15 @@
 basePath: /
 definitions:
+  models.AddPaymentToLoanDto:
+    properties:
+      amount:
+        type: number
+      date:
+        type: string
+    required:
+    - amount
+    - date
+    type: object
   models.CreateLoanDto:
     properties:
       StartDate:
@@ -79,6 +89,17 @@ definitions:
       monthStart:
         type: string
       paymentId:
+        type: string
+    type: object
+  models.Payment:
+    properties:
+      amount:
+        type: number
+      date:
+        type: string
+      id:
+        type: string
+      loanId:
         type: string
     type: object
   models.SucessfullOperation:
@@ -176,14 +197,6 @@ paths:
             items:
               $ref: '#/definitions/models.Loan'
             type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.FailedOperation'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.FailedOperation'
         "500":
           description: Internal Server Error
           schema:
@@ -222,6 +235,37 @@ paths:
           schema:
             $ref: '#/definitions/models.FailedOperation'
       summary: Create Loan
+      tags:
+      - loan
+  /loan/{id}/payment:
+    put:
+      consumes:
+      - application/json
+      description: Add Payment To Loan
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: payload
+        in: body
+        name: AddPaymentToLoanDto
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddPaymentToLoanDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Payment'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Add Payment To Loan
       tags:
       - loan
   /target-schema:

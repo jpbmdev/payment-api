@@ -18,6 +18,8 @@ type LoanService interface {
 	CalculateQuota(term float64, rate float64, amount float64) float64
 	FindLastYearLoans(userId primitive.ObjectID, loanStartDate time.Time) (models.Loans, error)
 	FindLoansByDate(fromDate time.Time, toDate time.Time, pageSize int, page int) (models.Loans, error)
+	FindLoanById(id primitive.ObjectID, loan *models.Loan) error
+	UpdateLoanPayment(id primitive.ObjectID, debt float64, loanHistory []models.LoanHistory) error
 }
 
 type loanService struct {
@@ -42,12 +44,42 @@ func (s *loanService) CreateLoan(loan models.Loan) error {
 	return nil
 }
 
+func (s *loanService) UpdateLoanPayment(id primitive.ObjectID, debt float64, loanHistory []models.LoanHistory) error {
+	//Create query
+	filter := bson.M{"_id": id}
+
+	//Define data to update
+	updateData := bson.M{"$set": bson.M{"debt": debt, "loanHistory": loanHistory}}
+
+	//Update loan in database
+	err := s.respository.UpdateOne(filter, updateData)
+
+	//Handle errors
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 //Function to calculate the month quota
 func (s *loanService) CalculateQuota(term float64, rate float64, amount float64) float64 {
 	r := rate / 12
 	quota := (r + (r / (math.Pow(1+r, term) - 1))) * amount
 	//Round to two decimals
 	return math.Round(quota*100) / 100
+}
+
+func (s *loanService) FindLoanById(id primitive.ObjectID, loan *models.Loan) error {
+	//Create Sort query
+	filter := bson.M{"_id": id}
+
+	err := s.respository.FindOne(filter, loan)
+
+	//Handle Errors
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *loanService) FindLastYearLoans(userId primitive.ObjectID, loanStartDate time.Time) (models.Loans, error) {

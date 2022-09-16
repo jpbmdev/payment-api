@@ -62,18 +62,6 @@ const docTemplate = `{
                             }
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.FailedOperation"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.FailedOperation"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -122,6 +110,53 @@ const docTemplate = `{
                         "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/models.FailedOperation"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.FailedOperation"
+                        }
+                    }
+                }
+            }
+        },
+        "/loan/{id}/payment": {
+            "put": {
+                "description": "Add Payment To Loan",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "loan"
+                ],
+                "summary": "Add Payment To Loan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "payload",
+                        "name": "AddPaymentToLoanDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AddPaymentToLoanDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Payment"
                         }
                     },
                     "500": {
@@ -283,6 +318,21 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.AddPaymentToLoanDto": {
+            "type": "object",
+            "required": [
+                "amount",
+                "date"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "date": {
+                    "type": "string"
+                }
+            }
+        },
         "models.CreateLoanDto": {
             "type": "object",
             "required": [
@@ -401,6 +451,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "paymentId": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Payment": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "loanId": {
                     "type": "string"
                 }
             }

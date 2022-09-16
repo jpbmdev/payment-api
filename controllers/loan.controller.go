@@ -20,6 +20,7 @@ import (
 type LoanController interface {
 	CreateLoan(ctx *gin.Context)
 	GetLoans(ctx *gin.Context)
+	AddPaymentToLoan(ctx *gin.Context)
 }
 
 type loanController struct {
@@ -27,6 +28,7 @@ type loanController struct {
 	userService         services.UserService
 	targetSchemaService services.TargetSchemaService
 	decisionTreeService services.DecisionTreeService
+	paymentService      services.PaymentService
 }
 
 //Function to crete new loan controller
@@ -36,7 +38,128 @@ func NewLoanController() LoanController {
 		userService:         services.NewUserService(),
 		targetSchemaService: services.NewTargetSchemaService(),
 		decisionTreeService: services.NewDecisionTreeService(),
+		paymentService:      services.NewPaymentService(),
 	}
+}
+
+// AddPaymentToLoan godoc
+// @Summary Add Payment To Loan
+// @Schemes
+// @Description Add Payment To Loan
+// @Tags loan
+// @Accept json
+// @Produce json
+// @Param id  path string true "ID"
+// @Param AddPaymentToLoanDto body models.AddPaymentToLoanDto true "payload"
+// @Success 200 {object}  models.Payment
+// @Failure 400 {object}  models.FailedOperation
+// @Failure 404 {object}  models.FailedOperation
+// @Failure 500 {object}  models.FailedOperation
+// @Router /loan/{id}/payment [put]
+func (c *loanController) AddPaymentToLoan(ctx *gin.Context) {
+
+	var addPaymentToLoanDto models.AddPaymentToLoanDto
+
+	//Get request body
+	err := ctx.ShouldBindJSON(&addPaymentToLoanDto)
+	if err != nil {
+		errorsResponse.Error400(ctx, err.Error())
+		return
+	}
+
+	//check if date is in ISO 8601
+	paymentDate, err := time.Parse("2006-01-02", addPaymentToLoanDto.Date)
+	if err != nil {
+		errorsResponse.Error400(ctx, err.Error())
+		return
+	}
+
+	//Check if the id passed is a mongoID
+	loanId, err := primitive.ObjectIDFromHex(ctx.Param("id"))
+	if err != nil {
+		errorsResponse.Error400(ctx, "Invalid Loan ID")
+		return
+	}
+
+	//Find the loan
+	var loan models.Loan
+	err = c.service.FindLoanById(loanId, &loan)
+	//Handle errors
+	if err != nil {
+		errorsResponse.Error404(ctx, "Loan does not exists")
+		return
+	}
+
+	//Check if the loan has debt
+	if loan.Debt == 0 {
+		errorsResponse.Error400(ctx, "The loan has no debt")
+		return
+	}
+
+	//Check if the amount to pay is valid
+	if loan.Debt < addPaymentToLoanDto.Amount {
+		errorsResponse.Error400(ctx, "The amount is greater than the debt")
+		return
+	}
+
+	//Find the index of the month of the payment in the loan history
+	index := -1
+	for i := range loan.LoanHistory {
+		if paymentDate.After(loan.LoanHistory[i].MonthStart.AddDate(0, 0, -1)) && paymentDate.Before(loan.LoanHistory[i].MonthEnd.AddDate(0, 0, 1)) {
+			index = i
+			break
+		}
+	}
+
+	if index == -1 {
+		errorsResponse.Error400(ctx, "This date is not in range of the loan")
+		return
+	}
+
+	if loan.LoanHistory[index].PaymentId != primitive.NilObjectID {
+		errorsResponse.Error400(ctx, "This month is already paid")
+		return
+	}
+
+	//Create the payment
+	payment := models.Payment{
+		ID:     primitive.NewObjectID(),
+		LoanId: loan.ID,
+		Date:   paymentDate,
+		Amount: addPaymentToLoanDto.Amount,
+	}
+
+	//Update Debt
+	loan.Debt -= addPaymentToLoanDto.Amount
+	//Round to two decimals
+	loan.Debt = math.Round((loan.Debt)*100) / 100
+	//Update loan history
+	loan.LoanHistory[index].PaymentId = payment.ID
+	for i := index; i < len(loan.LoanHistory); i++ {
+		loan.LoanHistory[i].Accumulated += addPaymentToLoanDto.Amount
+		//Round to two decimals
+		loan.LoanHistory[i].Accumulated = math.Round((loan.LoanHistory[i].Accumulated)*100) / 100
+	}
+
+	//The two operations below should be made inside a transaction
+	//But for time and simplicity i am not going to do it
+
+	//Add the payment to the db
+	err = c.paymentService.CreatePayment(payment)
+	if err != nil {
+		errorsResponse.Error500(ctx, err.Error())
+		return
+	}
+
+	//Update the loan in the db
+	err = c.service.UpdateLoanPayment(loan.ID, loan.Debt, loan.LoanHistory)
+	if err != nil {
+		errorsResponse.Error500(ctx, err.Error())
+		return
+	}
+
+	//Create Success Response
+	ctx.JSON(http.StatusOK, payment)
 }
 
 // GetLoans godoc
@@ -50,8 +173,6 @@ func NewLoanController() LoanController {
 // @Param   pageSize      query     int     false  "int valid"
 // @Param   page     query     int     false  "int valid"
 // @Success 200 {object}  models.Loans
-// @Failure 400 {object}  models.FailedOperation
-// @Failure 404 {object}  models.FailedOperation
 // @Failure 500 {object}  models.FailedOperation
 // @Router /loan [get]
 func (c *loanController) GetLoans(ctx *gin.Context) {
@@ -84,6 +205,7 @@ func (c *loanController) GetLoans(ctx *gin.Context) {
 		return
 	}
 
+	//Get loans form db
 	loans, err := c.service.FindLoansByDate(fromDate, toDate, ctx.Keys["pageSize"].(int), ctx.Keys["page"].(int))
 
 	if err != nil {
@@ -200,6 +322,8 @@ func (c *loanController) CreateLoan(ctx *gin.Context) {
 
 	//Calculate the quota of each month
 	quota := c.service.CalculateQuota(float64(createLoanDto.Term), targetParam.Rate, createLoanDto.Amount)
+	//Round to two decimals
+	quota = math.Round((quota)*100) / 100
 
 	monthStarDateTime := startDateTime
 	loanHistory := []models.LoanHistory{}
@@ -229,7 +353,7 @@ func (c *loanController) CreateLoan(ctx *gin.Context) {
 		TargetName:     targetParam.Name,
 		StartDate:      startDateTime,
 		EndDate:        monthStarDateTime.AddDate(0, 0, -1),
-		Quota:          float32(quota),
+		Quota:          quota,
 		Debt:           monthDebt,
 		LoanHistory:    loanHistory,
 	}
