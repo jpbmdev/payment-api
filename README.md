@@ -10,8 +10,8 @@ No es necesario crear .env ya que en el Dockerfile ya estan definidas las variab
 una vez desplegado acceder a la siguente url que es la documentacion de swagger:
 http://localhost:8080/docs/index.html#/
 
-# Comandos de desarrollo - ignorar
-# Comando para generar archivos de documentacion
+## Comandos de desarrollo - ignorar
+### Comando para generar archivos de documentacion
 `swag init -g core/swagger.go controllers/user.controller.go`
-# Comando para correr con hot reload
+### Comando para correr con hot reload
 `air`
