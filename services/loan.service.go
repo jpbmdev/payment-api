@@ -86,14 +86,11 @@ func (s *loanService) FindLoanById(id primitive.ObjectID, loan *models.Loan) err
 func (s *loanService) FindLastYearLoans(userId primitive.ObjectID, loanStartDate time.Time) (models.Loans, error) {
 	//Create query to find the loans a user started the year before this new loan
 	filter := bson.M{
+		"userId": userId,
 		"$expr": bson.M{
-			"$and": []interface{}{
-				bson.M{"_id": userId},
-				bson.M{"$eq": []interface{}{
-					bson.M{"$year": "$startDate"},
-					loanStartDate.Year() - 1,
-				},
-				},
+			"$eq": []interface{}{
+				bson.M{"$year": "$startDate"},
+				loanStartDate.Year() - 1,
 			},
 		}}
 
