@@ -2,7 +2,7 @@
 
 ## Comando para ejecutar el proyecto con Docker
 `docker compose up`
-Este comando monta la base de datos de mongo, y monta el back despues
+Este comando monta la base de datos de mongo, y monta el back despues.
 Esperar a que en la consola de docker salga [GIN-debug] Listening and serving HTTP on :8080
 ya que ahi es cuando todo se deplego correctamente.
 No es necesario crear .env ya que en el Dockerfile ya estan definidas las variables de entorno
