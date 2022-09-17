@@ -20,6 +20,7 @@ type LoanService interface {
 	FindLoansByDate(fromDate time.Time, toDate time.Time, pageSize int, page int) (models.Loans, error)
 	FindLoanById(id primitive.ObjectID, loan *models.Loan) error
 	UpdateLoanPayment(id primitive.ObjectID, debt float64, loanHistory []models.LoanHistory) error
+	FindLoansWithDebt(target string, date time.Time) (models.Loans, error)
 }
 
 type loanService struct {
@@ -95,6 +96,42 @@ func (s *loanService) FindLastYearLoans(userId primitive.ObjectID, loanStartDate
 				},
 			},
 		}}
+
+	loans, err := s.respository.Find(filter)
+
+	if err != nil {
+		return nil, err
+	}
+	return loans, nil
+}
+
+func (s *loanService) FindLoansWithDebt(target string, date time.Time) (models.Loans, error) {
+
+	andQuery := []bson.M{}
+	andQuery = append(
+		andQuery,
+		bson.M{"debt": bson.M{
+			"$ne": 0,
+		}},
+	)
+
+	if !date.IsZero() {
+		andQuery = append(
+			andQuery,
+			bson.M{"startDate": bson.M{
+				"$lte": date,
+			}},
+		)
+	}
+
+	if target != "" {
+		andQuery = append(
+			andQuery,
+			bson.M{"targetName": target},
+		)
+	}
+
+	filter := bson.M{"$and": andQuery}
 
 	loans, err := s.respository.Find(filter)
 

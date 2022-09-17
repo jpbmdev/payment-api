@@ -121,6 +121,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/loan/all/debt": {
+            "get": {
+                "description": "Get Debt of all loans, if date is passed this will calculate the debt of all loans that start before that date or in that date",
+                "tags": [
+                    "loan"
+                ],
+                "summary": "Get Debt of all loans",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "string valid",
+                        "name": "date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "string valid",
+                        "name": "target",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.LoanDebt"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.FailedOperation"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.FailedOperation"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.FailedOperation"
+                        }
+                    }
+                }
+            }
+        },
         "/loan/{id}": {
             "get": {
                 "description": "Get loan by Id",
@@ -256,7 +305,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Add Payment To Loan",
+                "description": "Add Payment To Loan, This endpoint create the payment of a specifc month of a loan, and update the history in the loan, you cannot pay the same month twice and you cannot pay a loan month if the debt is 0",
                 "consumes": [
                     "application/json"
                 ],
