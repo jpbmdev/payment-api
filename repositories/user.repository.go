@@ -15,6 +15,7 @@ import (
 type UserRepository interface {
 	InsertOne(user models.User) error
 	Find(filter bson.M) (models.Users, error)
+	FindOne(filter bson.M, user *models.User) error
 }
 
 type userRepository struct {
@@ -65,4 +66,16 @@ func (r *userRepository) Find(filter bson.M) (models.Users, error) {
 	}
 
 	return users, nil
+}
+
+func (r *userRepository) FindOne(filter bson.M, user *models.User) error {
+
+	//Get the targetSchema
+	err := r.collection.FindOne(r.ctx, filter).Decode(user)
+
+	//Handle Errors
+	if err != nil {
+		return err
+	}
+	return nil
 }

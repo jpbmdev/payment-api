@@ -11,7 +11,7 @@ type CreateUserDto struct {
 }
 
 type User struct {
-	ID   primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	ID   primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Name string             `json:"name"`
 }
 

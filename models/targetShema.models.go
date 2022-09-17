@@ -16,7 +16,7 @@ type TargetParams struct {
 }
 
 type TargetSchema struct {
-	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	ID           primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Version      string             `json:"version"`
 	Targets      []TargetParams     `json:"targets"`
 	DesicionTree []dtree.Tree       `json:"desicionTree"`
@@ -26,7 +26,7 @@ type TargetSchemas []TargetSchema
 
 //THIS MODEL IS USED ONLY FOR SWAGGER (HAVE TROUBLE CREATING THE DOCS WITH dtree.Tree)
 type TargetSchemaSwagger struct {
-	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	ID           primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Version      string             `json:"version"`
 	Targets      []TargetParams     `json:"targets"`
 	DesicionTree []Tree             `json:"desicionTree"`
