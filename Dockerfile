@@ -4,6 +4,7 @@ WORKDIR /go/src/github.com/jpbmdev/payment-api
 
 COPY . .
 
+RUN go get .
 RUN go build .
 
 EXPOSE 8080
