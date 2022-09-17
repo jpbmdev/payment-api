@@ -1,0 +1,137 @@
+{
+  "id": "6321162b88d6e09094f568ba",
+  "version": "1.0",
+  "desicionTree": [
+    {
+      "id": 1,
+      "name": "Root"
+    },
+    {
+      "id": 2,
+      "name": "PREMIUM_AMOUNT",
+      "parentId": 1,
+      "key": "amount_total",
+      "operator": "gte",
+      "value": 500000
+    },
+    {
+      "id": 3,
+      "name": "PREMIUM_CANT",
+      "parentId": 2,
+      "key": "cant",
+      "operator": "gte",
+      "value": 5
+    },
+    {
+      "id": 4,
+      "name": "PREMIUM",
+      "parentId": 3
+    },
+    {
+      "id": 5,
+      "name": "PREMIUM_CANT",
+      "parentId": 2,
+      "key": "cant",
+      "operator": "lt",
+      "value": 5
+    },
+    {
+      "id": 6,
+      "name": "FREQUENT",
+      "parentId": 5
+    },
+    {
+      "id": 7,
+      "name": "PREMIUM_AMOUNT",
+      "parentId": 1,
+      "key": "amount_total",
+      "operator": "lt",
+      "value": 500000
+    },
+    {
+      "id": 8,
+      "name": "FREQUENT_AMOUNT",
+      "parentId": 7,
+      "key": "amount_total",
+      "operator": "gte",
+      "value": 100000
+    },
+    {
+      "id": 9,
+      "name": "FREQUENT_CANT",
+      "parentId": 8,
+      "key": "cant",
+      "operator": "lt",
+      "value": 5
+    },
+    {
+      "id": 10,
+      "name": "FREQUENT_CANT",
+      "parentId": 9,
+      "key": "cant",
+      "operator": "gte",
+      "value": 2
+    },
+    {
+      "id": 11,
+      "name": "FREQUENT",
+      "parentId": 10
+    },
+    {
+      "id": 12,
+      "name": "FREQUENT_CANT",
+      "parentId": 9,
+      "key": "cant",
+      "operator": "lt",
+      "value": 2
+    },
+    {
+      "id": 13,
+      "name": "NEW",
+      "parentId": 12
+    },
+    {
+      "id": 14,
+      "name": "FREQUENT_CANT",
+      "parentId": 8,
+      "key": "cant",
+      "operator": "gte",
+      "value": 5
+    },
+    {
+      "id": 15,
+      "name": "NEW",
+      "parentId": 14
+    },
+    {
+      "id": 16,
+      "name": "FREQUENT_AMOUNT",
+      "parentId": 7,
+      "key": "amount_total",
+      "operator": "lt",
+      "value": 100000
+    },
+    {
+      "id": 17,
+      "name": "NEW",
+      "parentId": 16
+    }
+  ],
+  "targets": [
+    {
+      "name": "NEW",
+      "rate": 0.15,
+      "max": 500000
+    },
+    {
+      "name": "FREQUENT",
+      "rate": 0.1,
+      "max": 1000000
+    },
+    {
+      "name": "PREMIUM",
+      "rate": 0.05,
+      "max": 5000000
+    }
+  ]
+}

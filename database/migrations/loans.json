@@ -1,0 +1,112 @@
+[
+  {
+    "id": "6326343e715158faa6f71d4e",
+    "amount": 100000,
+    "term": 1,
+    "rate": 0.15,
+    "userId": "63262ccaf944867773f46389",
+    "targetSchemaId": "6321162b88d6e09094f568ba",
+    "targetName": "NEW",
+    "startDate": "2021-01-01T00:00:00Z",
+    "endDate": "2021-01-31T00:00:00Z",
+    "quota": 101250,
+    "debt": 0,
+    "loanHistory": [
+      {
+        "monthStart": "2021-01-01T00:00:00Z",
+        "monthEnd": "2021-01-31T00:00:00Z",
+        "accumulated": 101250,
+        "monthDebt": 101250,
+        "paymentId": "6326344b715158faa6f71d4f"
+      }
+    ]
+  },
+  {
+    "id": "6326345b715158faa6f71d50",
+    "amount": 100000,
+    "term": 1,
+    "rate": 0.15,
+    "userId": "63262ccaf944867773f46389",
+    "targetSchemaId": "6321162b88d6e09094f568ba",
+    "targetName": "NEW",
+    "startDate": "2021-07-01T00:00:00Z",
+    "endDate": "2021-07-31T00:00:00Z",
+    "quota": 101250,
+    "debt": 0,
+    "loanHistory": [
+      {
+        "monthStart": "2021-07-01T00:00:00Z",
+        "monthEnd": "2021-07-31T00:00:00Z",
+        "accumulated": 101250,
+        "monthDebt": 101250,
+        "paymentId": "63263469715158faa6f71d51"
+      }
+    ]
+  },
+  {
+    "id": "6326381d86af6009dd818ea2",
+    "amount": 100000,
+    "term": 3,
+    "rate": 0.1,
+    "userId": "63262ccaf944867773f46389",
+    "targetSchemaId": "6321162b88d6e09094f568ba",
+    "targetName": "FREQUENT",
+    "startDate": "2022-01-01T00:00:00Z",
+    "endDate": "2022-03-31T00:00:00Z",
+    "quota": 33890.43,
+    "debt": 101671.29,
+    "loanHistory": [
+      {
+        "monthStart": "2022-01-01T00:00:00Z",
+        "monthEnd": "2022-01-31T00:00:00Z",
+        "accumulated": 0,
+        "monthDebt": 33890.43
+      },
+      {
+        "monthStart": "2022-02-01T00:00:00Z",
+        "monthEnd": "2022-02-28T00:00:00Z",
+        "accumulated": 0,
+        "monthDebt": 67780.86
+      },
+      {
+        "monthStart": "2022-03-01T00:00:00Z",
+        "monthEnd": "2022-03-31T00:00:00Z",
+        "accumulated": 0,
+        "monthDebt": 101671.29
+      }
+    ]
+  },
+  {
+    "id": "632638ec86af6009dd818ea4",
+    "amount": 100000,
+    "term": 3,
+    "rate": 0.15,
+    "userId": "63262dd9f944867773f4638a",
+    "targetSchemaId": "6321162b88d6e09094f568ba",
+    "targetName": "NEW",
+    "startDate": "2022-02-01T00:00:00Z",
+    "endDate": "2022-04-30T00:00:00Z",
+    "quota": 34170.12,
+    "debt": 102510.36,
+    "loanHistory": [
+      {
+        "monthStart": "2022-02-01T00:00:00Z",
+        "monthEnd": "2022-02-28T00:00:00Z",
+        "accumulated": 0,
+        "monthDebt": 34170.12
+      },
+      {
+        "monthStart": "2022-03-01T00:00:00Z",
+        "monthEnd": "2022-03-31T00:00:00Z",
+        "accumulated": 0,
+        "monthDebt": 68340.24
+      },
+      {
+        "monthStart": "2022-04-01T00:00:00Z",
+        "monthEnd": "2022-04-30T00:00:00Z",
+        "accumulated": 0,
+        "monthDebt": 102510.36
+      }
+    ]
+  }
+]
