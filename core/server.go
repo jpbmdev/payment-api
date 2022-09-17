@@ -3,6 +3,7 @@ package core
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jpbmdev/payment-api/config"
+	"github.com/jpbmdev/payment-api/database"
 	"github.com/jpbmdev/payment-api/routes"
 )
 
@@ -31,6 +32,9 @@ func NewServerInstance() ServerInstance {
 }
 
 func (s *serverInstace) InitServer() {
+	//Run database migrations
+	database.Migrations()
+
 	//Load Swagger documentation page
 	InitializeSwagger(s.gin)
 
