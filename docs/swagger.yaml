@@ -503,4 +503,35 @@ paths:
       summary: Create User
       tags:
       - user
+  /user/{id}/loan:
+    get:
+      description: Get lists user loans
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/models.Loan'
+              type: array
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Get user loans
+      tags:
+      - user
 swagger: "2.0"

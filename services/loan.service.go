@@ -21,6 +21,7 @@ type LoanService interface {
 	FindLoanById(id primitive.ObjectID, loan *models.Loan) error
 	UpdateLoanPayment(id primitive.ObjectID, debt float64, loanHistory []models.LoanHistory) error
 	FindLoansWithDebt(target string, date time.Time) (models.Loans, error)
+	FindLoansByUserId(userId primitive.ObjectID) (models.Loans, error)
 }
 
 type loanService struct {
@@ -81,6 +82,20 @@ func (s *loanService) FindLoanById(id primitive.ObjectID, loan *models.Loan) err
 		return err
 	}
 	return nil
+}
+
+func (s *loanService) FindLoansByUserId(userId primitive.ObjectID) (models.Loans, error) {
+	//Create query to find the loans a user started the year before this new loan
+	filter := bson.M{
+		"userId": userId,
+	}
+
+	loans, err := s.respository.Find(filter)
+
+	if err != nil {
+		return nil, err
+	}
+	return loans, nil
 }
 
 func (s *loanService) FindLastYearLoans(userId primitive.ObjectID, loanStartDate time.Time) (models.Loans, error) {
