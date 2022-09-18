@@ -26,4 +26,5 @@ func NewUserRoutes() UserRoutes {
 func (r *userRoutes) InitializeRoutes(server *gin.Engine) {
 	server.POST("/user", r.controller.CreateUser)
 	server.GET("/user", r.controller.GetUsers)
+	server.GET("/user/:id/loan", r.controller.GetUserLoans)
 }

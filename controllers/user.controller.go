@@ -7,6 +7,7 @@ import (
 	"github.com/jpbmdev/payment-api/errorsResponse"
 	"github.com/jpbmdev/payment-api/models"
 	"github.com/jpbmdev/payment-api/services"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // -----------------------------------------------
@@ -15,16 +16,19 @@ import (
 type UserController interface {
 	CreateUser(ctx *gin.Context)
 	GetUsers(ctx *gin.Context)
+	GetUserLoans(ctx *gin.Context)
 }
 
 type userController struct {
-	service services.UserService
+	service     services.UserService
+	loanService services.LoanService
 }
 
 //Function to crete new user controller
 func NewUserController() UserController {
 	return &userController{
-		service: services.NewUserService(),
+		service:     services.NewUserService(),
+		loanService: services.NewLoanService(),
 	}
 }
 
@@ -87,4 +91,36 @@ func (c *userController) GetUsers(ctx *gin.Context) {
 
 	//Return list of users
 	ctx.JSON(http.StatusOK, users)
+}
+
+// GetUserLoans godoc
+// @Summary Get user loans
+// @Schemes
+// @Description Get lists user loans
+// @Tags user
+// @Produce json
+// @Param id  path string true "ID"
+// @Success 200 {array}   models.Loans
+// @Failure 400 {object}  models.FailedOperation
+// @Failure 500 {object}  models.FailedOperation
+// @Router /user/{id}/loan [get]
+func (c *userController) GetUserLoans(ctx *gin.Context) {
+
+	//Check if the id passed is a mongoID
+	userId, err := primitive.ObjectIDFromHex(ctx.Param("id"))
+	if err != nil {
+		errorsResponse.Error400(ctx, "Invalid User ID")
+		return
+	}
+
+	//Get list of loans from db
+	loans, err := c.loanService.FindLoansByUserId(userId)
+
+	if err != nil {
+		errorsResponse.Error500(ctx, err.Error())
+		return
+	}
+
+	//Return list of loans
+	ctx.JSON(http.StatusOK, loans)
 }
