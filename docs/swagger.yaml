@@ -1,0 +1,537 @@
+basePath: /
+definitions:
+  models.AddPaymentToLoanDto:
+    properties:
+      amount:
+        type: number
+      date:
+        type: string
+    required:
+    - amount
+    - date
+    type: object
+  models.CreateLoanDto:
+    properties:
+      amount:
+        minimum: 1
+        type: number
+      startDate:
+        type: string
+      term:
+        minimum: 1
+        type: integer
+      userId:
+        type: string
+    required:
+    - amount
+    - startDate
+    - term
+    - userId
+    type: object
+  models.CreateUserDto:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  models.DecisionTreeInputs:
+    properties:
+      amountTotal:
+        type: number
+      cant:
+        type: number
+    type: object
+  models.FailedOperation:
+    properties:
+      internalCode:
+        type: string
+      message:
+        type: string
+    type: object
+  models.Loan:
+    properties:
+      amount:
+        type: number
+      debt:
+        type: number
+      endDate:
+        type: string
+      id:
+        type: string
+      loanHistory:
+        items:
+          $ref: '#/definitions/models.LoanHistory'
+        type: array
+      quota:
+        type: number
+      rate:
+        type: number
+      startDate:
+        type: string
+      targetName:
+        type: string
+      targetSchemaId:
+        type: string
+      term:
+        type: integer
+      userId:
+        type: string
+    type: object
+  models.LoanDebt:
+    properties:
+      debt:
+        type: number
+    type: object
+  models.LoanHistory:
+    properties:
+      accumulated:
+        type: number
+      monthDebt:
+        type: number
+      monthEnd:
+        type: string
+      monthStart:
+        type: string
+      paymentId:
+        type: string
+    type: object
+  models.Payment:
+    properties:
+      amount:
+        type: number
+      date:
+        type: string
+      id:
+        type: string
+      loanId:
+        type: string
+    type: object
+  models.SucessfullOperation:
+    properties:
+      message:
+        type: string
+    type: object
+  models.TargetParams:
+    properties:
+      max:
+        type: integer
+      name:
+        type: string
+      rate:
+        type: number
+    type: object
+  models.TargetSchemaSwagger:
+    properties:
+      desicionTree:
+        items:
+          $ref: '#/definitions/models.Tree'
+        type: array
+      id:
+        type: string
+      targets:
+        items:
+          $ref: '#/definitions/models.TargetParams'
+        type: array
+      version:
+        type: string
+    type: object
+  models.Tree:
+    properties:
+      content: {}
+      headers:
+        additionalProperties: true
+        type: object
+      id:
+        type: integer
+      key:
+        type: string
+      name:
+        type: string
+      operator:
+        type: string
+      order:
+        type: integer
+      parentId:
+        type: integer
+      value: {}
+    type: object
+  models.User:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a sample server to manage payments
+  title: Payment Simple API
+  version: "1.0"
+paths:
+  /loan:
+    get:
+      description: Get loans, you can pass a start date, and a end date and the endpoint
+        will find all loans STARTED in that range, if no params are passed this will
+        return all loans, this endpoint supports a very simple pagination where you
+        can select the page and the pageSize
+      parameters:
+      - description: string valid
+        in: query
+        name: from
+        type: string
+      - description: string valid
+        in: query
+        name: to
+        type: string
+      - description: int valid
+        in: query
+        name: pageSize
+        type: integer
+      - description: int valid
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Loan'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Get Loans
+      tags:
+      - loan
+    post:
+      consumes:
+      - application/json
+      description: Create loan, Full detail on the readme
+      parameters:
+      - description: payload
+        in: body
+        name: CreateLoanDto
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateLoanDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Loan'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Create Loan
+      tags:
+      - loan
+  /loan/{id}:
+    get:
+      description: Get loan by Id
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Loan'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Get Loan by Id
+      tags:
+      - loan
+  /loan/{id}/debt:
+    get:
+      description: Get Debt of a single Loan, you can pass a date to check the debt
+        on that specific time, if no date is passed this endpoint will return the
+        entire debt
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: string valid
+        in: query
+        name: date
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.LoanDebt'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Get Debt of a single Loan
+      tags:
+      - loan
+  /loan/{id}/payment:
+    get:
+      description: Get Payments by loan Id
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Payment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Get Payments by loan Id
+      tags:
+      - loan
+    put:
+      consumes:
+      - application/json
+      description: Add Payment To Loan, This endpoint create the payment of a specifc
+        month of a loan, and update the history in the loan, you cannot pay the same
+        month twice and you cannot pay a loan month if the debt is 0
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: payload
+        in: body
+        name: AddPaymentToLoanDto
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddPaymentToLoanDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Payment'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Add Payment To Loan
+      tags:
+      - loan
+  /loan/all/debt:
+    get:
+      description: Get Debt of all loans, if date is passed this will calculate the
+        debt of all loans that start before that date or in that date
+      parameters:
+      - description: string valid
+        in: query
+        name: date
+        type: string
+      - description: string valid
+        in: query
+        name: target
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.LoanDebt'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Get Debt of all loans
+      tags:
+      - loan
+  /target-schema:
+    get:
+      description: Get lists of Target Schemas
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.TargetSchemaSwagger'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Get Target Schemas
+      tags:
+      - target-schema
+  /target-schema/test-tree:
+    post:
+      consumes:
+      - application/json
+      description: Test Target Schema Decision Tree output with Cant and AmountTotal
+      parameters:
+      - description: payload
+        in: body
+        name: DecisionTreeInputs
+        required: true
+        schema:
+          $ref: '#/definitions/models.DecisionTreeInputs'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TargetParams'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Test Target Schema Decision Tree
+      tags:
+      - target-schema
+  /user:
+    get:
+      description: Get lists of users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Get users
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: Create a user with his name
+      parameters:
+      - description: payload
+        in: body
+        name: CreateUserDto
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateUserDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.SucessfullOperation'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Create User
+      tags:
+      - user
+  /user/{id}/loan:
+    get:
+      description: Get lists user loans
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/models.Loan'
+              type: array
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.FailedOperation'
+      summary: Get user loans
+      tags:
+      - user
+swagger: "2.0"
