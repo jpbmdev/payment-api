@@ -1,5 +1,7 @@
 # payment-api
 
+# Por favor leer el pdf de consideraciones antes para poder comprender la solucion realizada 
+
 ## Comando para ejecutar el proyecto con Docker
 `docker compose up`
 Este comando monta la base de datos de mongo, y monta el back despues.
